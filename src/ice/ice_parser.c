@@ -352,7 +352,7 @@ nr_ice_peer_candidate_from_attribute(nr_ice_ctx *ctx,char *orig,nr_ice_media_str
     _status=0;
   abort:
     if (_status){
-        r_log(LOG_ICE,LOG_WARNING,"ICE(%s): Error parsing attribute: %s",ctx->label,orig);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): Error parsing attribute: %s",ctx->label,orig);
         nr_ice_candidate_destroy(&cand);
     }
 
@@ -413,7 +413,7 @@ nr_ice_peer_ctx_parse_media_stream_attribute(nr_ice_peer_ctx *pctx, nr_ice_media
   abort:
     if (_status) {
       if (orig)
-        r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s): Error parsing attribute: %s",pctx->label,orig);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s): Error parsing attribute: %s",pctx->label,orig);
     }
 
     return(_status);
@@ -553,7 +553,7 @@ nr_ice_peer_ctx_parse_global_attributes(nr_ice_peer_ctx *pctx, char **attrs, int
   abort:
     if (_status) {
       if (orig)
-        r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s): Error parsing attribute: %s",pctx->label,orig);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s): Error parsing attribute: %s",pctx->label,orig);
     }
 
     RFREE(connection_address);

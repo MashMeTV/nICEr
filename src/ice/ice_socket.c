@@ -139,7 +139,7 @@ static void nr_ice_socket_readable_cb(NR_SOCKET s, int how, void *cb_arg)
 
                 if (processed_indication) {
                   /* Don't allow recursively wrapped indications */
-                  r_log(LOG_ICE, LOG_WARNING,
+                  r_log(LOG_ICE, LOG_NOTICE,
                         "ICE(%s): discarding recursively wrapped indication",
                         sock->ctx->label);
                   break;

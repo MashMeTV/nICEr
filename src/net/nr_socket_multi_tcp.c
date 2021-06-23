@@ -193,7 +193,7 @@ static int nr_socket_multi_tcp_create_stun_server_socket(
       nr_transport_addr_copy(&stun_server_addr, &stun_server->u.addr);
       r=nr_socket_connect(tcp_socket_ctx->inner, &stun_server_addr);
       if (r && r!=R_WOULDBLOCK) {
-        r_log(LOG_ICE,LOG_WARNING,"%s:%d function %s connect to STUN server(addr:%s) failed with error %d",__FILE__,__LINE__,__FUNCTION__,stun_server_addr.as_string,r);
+        r_log(LOG_ICE,LOG_NOTICE,"%s:%d function %s connect to STUN server(addr:%s) failed with error %d",__FILE__,__LINE__,__FUNCTION__,stun_server_addr.as_string,r);
         ABORT(r);
       }
 
@@ -242,7 +242,7 @@ int nr_socket_multi_tcp_create(struct nr_ice_ctx_ *ctx,
           if ((r=nr_socket_multi_tcp_create_stun_server_socket(sock,
               sock->ctx->stun_servers+i, addr, max_pending))) {
             if (r!=R_BAD_ARGS) {
-              r_log(LOG_ICE,LOG_WARNING,"%s:%d function %s failed to connect STUN server from addr:%s with error %d",__FILE__,__LINE__,__FUNCTION__,addr->as_string,r);
+              r_log(LOG_ICE,LOG_NOTICE,"%s:%d function %s failed to connect STUN server from addr:%s with error %d",__FILE__,__LINE__,__FUNCTION__,addr->as_string,r);
             }
           }
         }
@@ -252,7 +252,7 @@ int nr_socket_multi_tcp_create(struct nr_ice_ctx_ *ctx,
           if ((r=nr_socket_multi_tcp_create_stun_server_socket(sock,
               &(sock->ctx->turn_servers[i]).turn_server, addr, max_pending))) {
             if (r!=R_BAD_ARGS) {
-              r_log(LOG_ICE,LOG_WARNING,"%s:%d function %s failed to connect TURN server from addr:%s with error %d",__FILE__,__LINE__,__FUNCTION__,addr->as_string,r);
+              r_log(LOG_ICE,LOG_NOTICE,"%s:%d function %s failed to connect TURN server from addr:%s with error %d",__FILE__,__LINE__,__FUNCTION__,addr->as_string,r);
             }
           }
         }
@@ -588,7 +588,7 @@ static void nr_tcp_multi_lsocket_readable_cb(NR_SOCKET s, int how, void *arg)
     _status=0;
 abort:
     if (_status) {
-      r_log(LOG_ICE,LOG_WARNING,"%s:%d %s failed to accept new TCP connection: %d",__FILE__,__LINE__,__FUNCTION__,_status);
+      r_log(LOG_ICE,LOG_NOTICE,"%s:%d %s failed to accept new TCP connection: %d",__FILE__,__LINE__,__FUNCTION__,_status);
     } else {
       r_log(LOG_ICE,LOG_INFO,"%s:%d %s accepted new TCP connection from %s",__FILE__,__LINE__,__FUNCTION__,remote_addr.as_string);
     }
@@ -614,7 +614,7 @@ static int nr_socket_multi_tcp_listen(void *obj, int backlog)
     _status=0;
   abort:
     if (_status)
-      r_log(LOG_ICE,LOG_WARNING,"%s:%d function %s failed with error %d",__FILE__,__LINE__,__FUNCTION__,_status);
+      r_log(LOG_ICE,LOG_NOTICE,"%s:%d function %s failed with error %d",__FILE__,__LINE__,__FUNCTION__,_status);
 
     return(_status);
   }

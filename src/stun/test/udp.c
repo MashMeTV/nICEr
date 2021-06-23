@@ -74,7 +74,7 @@ openPort( unsigned short port, unsigned int interfaceIp)
    fd = socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP);
    if ( fd == INVALID_SOCKET )
    {
-      r_log_e(NR_LOG_STUN, LOG_WARNING,"Could not create a UDP socket");
+      r_log_e(NR_LOG_STUN, LOG_NOTICE,"Could not create a UDP socket");
       return INVALID_SOCKET;
    }
 
@@ -97,12 +97,12 @@ openPort( unsigned short port, unsigned int interfaceIp)
       {
          case 0:
          {
-            r_log(NR_LOG_STUN, LOG_WARNING,"Could not bind socket");
+            r_log(NR_LOG_STUN, LOG_NOTICE,"Could not bind socket");
             return INVALID_SOCKET;
          }
          case EADDRINUSE:
          {
-            r_log_e(NR_LOG_STUN, LOG_WARNING,"Port %d for receiving UDP is in use",port);
+            r_log_e(NR_LOG_STUN, LOG_NOTICE,"Port %d for receiving UDP is in use",port);
             return INVALID_SOCKET;
          }
          break;
@@ -114,7 +114,7 @@ openPort( unsigned short port, unsigned int interfaceIp)
          break;
          default:
          {
-            r_log(NR_LOG_STUN, LOG_WARNING, "Could not bind UDP receive port");
+            r_log(NR_LOG_STUN, LOG_NOTICE, "Could not bind UDP receive port");
             return INVALID_SOCKET;
          }
          break;
@@ -155,14 +155,14 @@ getMessage( Socket fd, char* buf, int* len,
       switch (errno)
       {
          case ENOTSOCK:
-            r_log_e(NR_LOG_STUN, LOG_WARNING, "Error not a socket");
+            r_log_e(NR_LOG_STUN, LOG_NOTICE, "Error not a socket");
             break;
          case ECONNRESET:
-            r_log_e(NR_LOG_STUN, LOG_WARNING, "Error connection reset - host not reachable");
+            r_log_e(NR_LOG_STUN, LOG_NOTICE, "Error connection reset - host not reachable");
             break;
 
          default:
-            r_log_e(NR_LOG_STUN, LOG_WARNING, "Socket Error");
+            r_log_e(NR_LOG_STUN, LOG_NOTICE, "Socket Error");
       }
 
       ABORT(R_FAILED);
@@ -170,13 +170,13 @@ getMessage( Socket fd, char* buf, int* len,
 
    if ( *len < 0 )
    {
-      r_log(NR_LOG_STUN, LOG_WARNING, "socket closed? negative len");
+      r_log(NR_LOG_STUN, LOG_NOTICE, "socket closed? negative len");
       ABORT(R_FAILED);
    }
 
    if ( *len == 0 )
    {
-      r_log(NR_LOG_STUN, LOG_WARNING, "socket closed? zero len");
+      r_log(NR_LOG_STUN, LOG_NOTICE, "socket closed? zero len");
       ABORT(R_FAILED);
    }
 
@@ -240,12 +240,12 @@ sendMessage( Socket fd, char* buf, int l,
          break;
          case EAFNOSUPPORT:
          {
-            r_log_e(NR_LOG_STUN, LOG_WARNING, "Could not send");
+            r_log_e(NR_LOG_STUN, LOG_NOTICE, "Could not send");
          }
          break;
          default:
          {
-            r_log_e(NR_LOG_STUN, LOG_WARNING, "Could not send");
+            r_log_e(NR_LOG_STUN, LOG_NOTICE, "Could not send");
          }
       }
       ABORT(R_FAILED);
@@ -253,7 +253,7 @@ sendMessage( Socket fd, char* buf, int l,
 
    if ( s == 0 )
    {
-      r_log(NR_LOG_STUN, LOG_WARNING,"no data sent in send");
+      r_log(NR_LOG_STUN, LOG_NOTICE,"no data sent in send");
       ABORT(R_FAILED);
    }
 
@@ -280,7 +280,7 @@ initNetwork()
    if ( err != 0 )
    {
       // could not find a usable WinSock DLL
-      r_log(NR_LOG_STUN, LOG_WARNING,"Could not load winsock");
+      r_log(NR_LOG_STUN, LOG_NOTICE,"Could not load winsock");
       assert(0); // TODO: is this is failing, try a different version that 2.2, 1.0 or later will likely work
       exit(1);
    }
@@ -297,7 +297,7 @@ initNetwork()
       /* Tell the user that we could not find a usable */
       /* WinSock DLL.                                  */
       WSACleanup( );
-      r_log(NR_LOG_STUN, LOG_WARNING,"Bad winsock verion");
+      r_log(NR_LOG_STUN, LOG_NOTICE,"Bad winsock verion");
       assert(0); // TODO: is this is failing, try a different version that 2.2, 1.0 or later will likely work
       exit(1);
    }

@@ -362,22 +362,22 @@ nr_stun_build_auth_params(nr_stun_client_auth_params *auth, nr_stun_message *req
     ABORT(r);
 
   if (!auth->username) {
-    r_log(NR_LOG_STUN, LOG_WARNING, "STUN authentication requested but no username provided");
+    r_log(NR_LOG_STUN, LOG_NOTICE, "STUN authentication requested but no username provided");
     ABORT(R_INTERNAL);
   }
 
   if (!auth->password.len) {
-    r_log(NR_LOG_STUN, LOG_WARNING, "STUN authentication requested but no password provided");
+    r_log(NR_LOG_STUN, LOG_NOTICE, "STUN authentication requested but no password provided");
     ABORT(R_INTERNAL);
   }
 
   if (!auth->realm) {
-    r_log(NR_LOG_STUN, LOG_WARNING, "STUN authentication requested but no realm provided");
+    r_log(NR_LOG_STUN, LOG_NOTICE, "STUN authentication requested but no realm provided");
     ABORT(R_INTERNAL);
   }
 
   if (!auth->nonce) {
-    r_log(NR_LOG_STUN, LOG_WARNING, "STUN authentication requested but no nonce provided");
+    r_log(NR_LOG_STUN, LOG_NOTICE, "STUN authentication requested but no nonce provided");
     ABORT(R_INTERNAL);
   }
 

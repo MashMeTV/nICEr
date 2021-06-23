@@ -187,7 +187,7 @@ nr_stun_server_process(StunServerInfo* info)
    int e = select( maxFd, &fdSet, NULL,NULL, &tv );
    if (e < 0)
    {
-      r_log_e(NR_LOG_STUN, LOG_WARNING, "Error on select");
+      r_log_e(NR_LOG_STUN, LOG_NOTICE, "Error on select");
    }
    else if (e >= 0)
    {
@@ -293,7 +293,7 @@ nr_stun_init_server(StunServerInfo* info, StunAddress4* myAddr)
 
    if ((info->myFd = openPort(myAddr->port, myAddr->addr)) == INVALID_SOCKET)
    {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Can't open %s", nr_ip4toa(myAddr));
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Can't open %s", nr_ip4toa(myAddr));
       nr_stun_stop_server(info);
 
       ABORT(R_FAILED);

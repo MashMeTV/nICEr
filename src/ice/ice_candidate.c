@@ -283,7 +283,7 @@ static void nr_ice_candidate_mark_done(nr_ice_candidate *cand, int state)
       if (state == NR_ICE_CAND_STATE_INITIALIZED &&
           nr_turn_client_get_mapped_address(cand->u.relayed.turn,
                                             &srflx->addr)) {
-        r_log(LOG_ICE, LOG_WARNING, "ICE(%s)/CAND(%s): Failed to get mapped address from TURN allocate response, srflx failed.", cand->ctx->label, cand->label);
+        r_log(LOG_ICE, LOG_NOTICE, "ICE(%s)/CAND(%s): Failed to get mapped address from TURN allocate response, srflx failed.", cand->ctx->label, cand->label);
         nr_ice_candidate_mark_done(srflx, NR_ICE_CAND_STATE_FAILED);
       } else {
         nr_ice_candidate_mark_done(srflx, state);
@@ -679,13 +679,13 @@ static int nr_ice_candidate_resolved_cb(void *cb_arg, nr_transport_addr *addr)
             cand->ctx->label,cand->label,addr->as_string);
     }
     else {
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): failed to resolve candidate %s.",
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): failed to resolve candidate %s.",
             cand->ctx->label,cand->label);
       ABORT(R_NOT_FOUND);
     }
 
     if (nr_transport_addr_check_compatibility(addr, &cand->base)) {
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): Skipping STUN server because of link local mis-match for candidate %s",cand->ctx->label,cand->label);
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): Skipping STUN server because of link local mis-match for candidate %s",cand->ctx->label,cand->label);
       ABORT(R_NOT_FOUND);
     }
 
@@ -912,7 +912,7 @@ static void nr_ice_turn_allocated_cb(NR_SOCKET s, int how, void *cb_arg)
 
     case NR_TURN_CLIENT_STATE_FAILED:
     case NR_TURN_CLIENT_STATE_CANCELLED:
-      r_log(NR_LOG_TURN, LOG_WARNING,
+      r_log(NR_LOG_TURN, LOG_NOTICE,
             "ICE-CANDIDATE(%s): nr_turn_allocated_cb called with state %d",
             cand->label, turn->state);
       /* This failed, so go to the next TURN server if there is one */
@@ -927,7 +927,7 @@ static void nr_ice_turn_allocated_cb(NR_SOCKET s, int how, void *cb_arg)
   abort:
     if(_status){
       if (cand) {
-        r_log(NR_LOG_TURN, LOG_WARNING,
+        r_log(NR_LOG_TURN, LOG_NOTICE,
               "ICE-CANDIDATE(%s): nr_turn_allocated_cb failed", cand->label);
         nr_ice_candidate_mark_done(cand, NR_ICE_CAND_STATE_FAILED);
       }

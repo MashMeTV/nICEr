@@ -334,7 +334,7 @@ static int nr_ice_component_initialize_udp(struct nr_ice_ctx_ *ctx,nr_ice_compon
         }
       }
       else{
-        r_log(LOG_ICE,LOG_WARNING,"ICE(%s): relay only option results in no host candidate for %s",ctx->label,addrs[i].addr.as_string);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): relay only option results in no host candidate for %s",ctx->label,addrs[i].addr.as_string);
       }
 
 #ifdef USE_TURN
@@ -518,7 +518,7 @@ static int nr_ice_component_initialize_tcp(struct nr_ice_ctx_ *ctx,nr_ice_compon
     }
     if ((ctx->flags & NR_ICE_CTX_FLAGS_RELAY_ONLY) ||
         (ctx->flags & NR_ICE_CTX_FLAGS_ONLY_PROXY)) {
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): relay/proxy only option results in ICE TCP being disabled",ctx->label);
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): relay/proxy only option results in ICE TCP being disabled",ctx->label);
       ice_tcp_disabled = 1;
     }
 
@@ -539,20 +539,20 @@ static int nr_ice_component_initialize_tcp(struct nr_ice_ctx_ *ctx,nr_ice_compon
         /* passive host candidate */
         if ((r=nr_ice_component_create_tcp_host_candidate(ctx, component, &addrs[i].addr,
           TCP_TYPE_PASSIVE, backlog, 0, lufrag, pwd, &isock_psv))) {
-          r_log(LOG_ICE,LOG_WARNING,"ICE(%s): failed to create passive TCP host candidate: %d",ctx->label,r);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): failed to create passive TCP host candidate: %d",ctx->label,r);
         }
 
         /* active host candidate */
         if ((r=nr_ice_component_create_tcp_host_candidate(ctx, component, &addrs[i].addr,
           TCP_TYPE_ACTIVE, 0, 0, lufrag, pwd, NULL))) {
-          r_log(LOG_ICE,LOG_WARNING,"ICE(%s): failed to create active TCP host candidate: %d",ctx->label,r);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): failed to create active TCP host candidate: %d",ctx->label,r);
         }
 
         /* simultaneous-open host candidate */
         if (so_sock_ct) {
           if ((r=nr_ice_component_create_tcp_host_candidate(ctx, component, &addrs[i].addr,
             TCP_TYPE_SO, 0, so_sock_ct, lufrag, pwd, &isock_so))) {
-            r_log(LOG_ICE,LOG_WARNING,"ICE(%s): failed to create simultanous open TCP host candidate: %d",ctx->label,r);
+            r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): failed to create simultanous open TCP host candidate: %d",ctx->label,r);
           }
         }
 
@@ -866,7 +866,7 @@ static int nr_ice_component_handle_triggered_check(nr_ice_component *comp, nr_ic
 
     if(nr_stun_message_has_attribute(sreq,NR_STUN_ATTR_USE_CANDIDATE,0)){
       if(comp->stream->pctx->controlling){
-        r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s)/CAND_PAIR(%s): Peer sent USE-CANDIDATE but is controlled",comp->stream->pctx->label, pair->codeword);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s)/CAND_PAIR(%s): Peer sent USE-CANDIDATE but is controlled",comp->stream->pctx->label, pair->codeword);
       }
       else{
         /* If this is the first time we've noticed this is nominated...*/
@@ -924,7 +924,7 @@ static int nr_ice_component_process_incoming_check(nr_ice_component *comp, nr_tr
         }
         else {
           /* We are: throw an error */
-          r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s): returning 487 role conflict",comp->stream->pctx->label);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s): returning 487 role conflict",comp->stream->pctx->label);
 
           *error=487;
           ABORT(R_REJECTED);
@@ -943,7 +943,7 @@ static int nr_ice_component_process_incoming_check(nr_ice_component *comp, nr_tr
         }
         else {
           /* We are: throw an error */
-          r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s): returning 487 role conflict",comp->stream->pctx->label);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s): returning 487 role conflict",comp->stream->pctx->label);
 
           *error=487;
           ABORT(R_REJECTED);
@@ -971,7 +971,7 @@ static int nr_ice_component_process_incoming_check(nr_ice_component *comp, nr_tr
        * reflexive candidate pair. */
 
       if(!nr_stun_message_has_attribute(sreq,NR_STUN_ATTR_PRIORITY,&attr)){
-        r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s): Rejecting stun request without priority",comp->stream->pctx->label);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s): Rejecting stun request without priority",comp->stream->pctx->label);
         *error=400;
         ABORT(R_BAD_DATA);
       }
@@ -991,7 +991,7 @@ static int nr_ice_component_process_incoming_check(nr_ice_component *comp, nr_tr
       /* Well, this really shouldn't happen, but it's an error from the
          other side, so we just throw an error and keep going */
       if(!cand){
-        r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s): stun request to unknown local address %s, discarding",comp->stream->pctx->label,local_addr->as_string);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s): stun request to unknown local address %s, discarding",comp->stream->pctx->label,local_addr->as_string);
 
         *error=400;
         ABORT(R_NOT_FOUND);
@@ -1345,7 +1345,7 @@ static void nr_ice_component_consent_timeout_cb(NR_SOCKET s, int how, void *cb_a
 
     comp->consent_timeout = 0;
 
-    r_log(LOG_ICE,LOG_WARNING,"ICE(%s)/STREAM(%s)/COMP(%d): Consent refresh final time out",
+    r_log(LOG_ICE,LOG_NOTICE,"ICE(%s)/STREAM(%s)/COMP(%d): Consent refresh final time out",
           comp->ctx->label, comp->stream->label, comp->component_id);
     nr_ice_component_consent_failed(comp);
   }
@@ -1361,7 +1361,7 @@ void nr_ice_component_disconnected(nr_ice_component *comp)
       return;
     }
 
-    r_log(LOG_ICE,LOG_WARNING,"ICE(%s)/STREAM(%s)/COMP(%d): component disconnected",
+    r_log(LOG_ICE,LOG_NOTICE,"ICE(%s)/STREAM(%s)/COMP(%d): component disconnected",
           comp->ctx->label, comp->stream->label, comp->component_id);
     comp->disconnected = 1;
 
@@ -1764,7 +1764,7 @@ int nr_ice_component_insert_pair(nr_ice_component *pcomp, nr_ice_cand_pair *pair
        (pair->remote->stream->ice_state == NR_ICE_MEDIA_STREAM_CHECKS_FROZEN &&
         !pair->remote->stream->pctx->checks_started)){
       if(nr_ice_media_stream_start_checks(pair->remote->stream->pctx, pair->remote->stream)) {
-        r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s)/CAND-PAIR(%s): Could not restart checks for new pair %s.",pair->remote->stream->pctx->label, pair->codeword, pair->as_string);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s)/CAND-PAIR(%s): Could not restart checks for new pair %s.",pair->remote->stream->pctx->label, pair->codeword, pair->as_string);
         ABORT(R_INTERNAL);
       }
     }

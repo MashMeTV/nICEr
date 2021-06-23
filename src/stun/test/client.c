@@ -284,13 +284,13 @@ nr_stun_request( StunAddress4* dest, int testNum, StunAddress4* sAddr )
    if (nr_stun_message_has_attribute(resp, NR_STUN_ATTR_FINGERPRINT, &attr)) {
        r_log(NR_LOG_STUN, LOG_NOTICE, "Validating Fingerprint");
        if (!attr->u.fingerprint.valid) {
-           r_log(NR_LOG_STUN, LOG_WARNING, "Fingerprint is bad");
+           r_log(NR_LOG_STUN, LOG_NOTICE, "Fingerprint is bad");
            ABORT(R_FAILED);
        }
    }
    else if (resp->header.magic_cookie != MAGIC_COOKIE
          && resp->header.magic_cookie != MAGIC_COOKIE2) {
-       r_log(NR_LOG_STUN, LOG_WARNING, "Missing Magic Cookie");
+       r_log(NR_LOG_STUN, LOG_NOTICE, "Missing Magic Cookie");
        ABORT(R_FAILED);
    }
 

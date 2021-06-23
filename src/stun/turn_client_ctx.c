@@ -261,16 +261,16 @@ static void nr_turn_stun_ctx_cb(NR_SOCKET s, int how, void *arg)
             // track 401s for ice telemetry
             nr_accumulate_count(&(ctx->tctx->cnt_401s), 1);
           }
-          r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s): Exceeded the number of retries", ctx->tctx->label);
+          r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s): Exceeded the number of retries", ctx->tctx->label);
           ABORT(R_FAILED);
         }
 
         if (!ctx->stun->nonce) {
-          r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s): 401 but no nonce", ctx->tctx->label);
+          r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s): 401 but no nonce", ctx->tctx->label);
           ABORT(R_FAILED);
         }
         if (!ctx->stun->realm) {
-          r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s): 401 but no realm", ctx->tctx->label);
+          r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s): 401 but no realm", ctx->tctx->label);
           ABORT(R_FAILED);
         }
 
@@ -451,7 +451,7 @@ int nr_turn_client_send_stun_request(nr_turn_client_ctx *ctx,
   if ((r=nr_socket_sendto(ctx->sock,
                           req->buffer, req->length, flags,
                           &ctx->turn_server_addr))) {
-    r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s): Failed sending request",
+    r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s): Failed sending request",
           ctx->label);
     ABORT(r);
   }
@@ -515,7 +515,7 @@ int nr_turn_client_failed(nr_turn_client_ctx *ctx)
       ctx->state == NR_TURN_CLIENT_STATE_CANCELLED)
     return(0);
 
-  r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s) failed", ctx->label);
+  r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s) failed", ctx->label);
   nr_turn_client_cancel(ctx);
   ctx->state = NR_TURN_CLIENT_STATE_FAILED;
   nr_turn_client_fire_finished_cb(ctx);
@@ -599,7 +599,7 @@ static void nr_turn_client_error_cb(NR_SOCKET s, int how, void *arg)
 {
   nr_turn_stun_ctx *ctx = (nr_turn_stun_ctx *)arg;
 
-  r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s): mode %d, %s",
+  r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s): mode %d, %s",
         ctx->tctx->label, ctx->mode, __FUNCTION__);
 
   nr_turn_client_failed(ctx->tctx);
@@ -612,7 +612,7 @@ static void nr_turn_client_permission_error_cb(NR_SOCKET s, int how, void *arg)
   if (ctx->last_error_code == 403) {
     // track 403s for ice telemetry
     nr_accumulate_count(&(ctx->tctx->cnt_403s), 1);
-    r_log(NR_LOG_TURN, LOG_WARNING, "TURN(%s): mode %d, permission denied",
+    r_log(NR_LOG_TURN, LOG_NOTICE, "TURN(%s): mode %d, permission denied",
           ctx->tctx->label, ctx->mode);
 
   } else{
@@ -856,7 +856,7 @@ int nr_turn_client_parse_data_indication(nr_turn_client_ctx *ctx,
 
   if (nr_transport_addr_cmp(&ctx->turn_server_addr, source_addr,
                             NR_TRANSPORT_ADDR_CMP_MODE_ALL)) {
-    r_log(NR_LOG_TURN, LOG_WARNING,
+    r_log(NR_LOG_TURN, LOG_NOTICE,
           "TURN(%s): Indication from unexpected source addr %s (expected %s)",
           ctx->label, source_addr->as_string, ctx->turn_server_addr.as_string);
     ABORT(R_REJECTED);
@@ -876,7 +876,7 @@ int nr_turn_client_parse_data_indication(nr_turn_client_ctx *ctx,
   if ((r=nr_turn_permission_find(ctx, &attr->u.xor_mapped_address.unmasked,
                                  &perm))) {
     if (r == R_NOT_FOUND) {
-      r_log(NR_LOG_TURN, LOG_WARNING,
+      r_log(NR_LOG_TURN, LOG_NOTICE,
             "TURN(%s): Indication from peer addr %s with no permission",
             ctx->label, attr->u.xor_mapped_address.unmasked.as_string);
     }

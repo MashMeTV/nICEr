@@ -395,7 +395,7 @@ static int nr_stun_client_send_request(nr_stun_client_ctx *ctx)
       if (r != R_WOULDBLOCK) {
         ABORT(r);
       }
-      r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_socket_sendto blocked, treating as dropped packet",ctx->label);
+      r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_socket_sendto blocked, treating as dropped packet",ctx->label);
     }
 
     ctx->request_ct++;
@@ -563,7 +563,7 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
         ABORT(r);
 
     if ((r=nr_stun_decode_message(ctx->response, nr_stun_client_get_password, password))) {
-        r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): error decoding response",ctx->label);
+        r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): error decoding response",ctx->label);
         ABORT(r);
     }
 
@@ -584,13 +584,13 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
     if (password) {
         if (nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_NONCE, 0)) {
             if ((r=nr_stun_receive_response_long_term_auth(ctx->response, ctx))) {
-                r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): long term auth failed",ctx->label);
+                r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): long term auth failed",ctx->label);
                 ABORT(r);
             }
         }
         else {
             if ((r=nr_stun_receive_response_short_term_auth(ctx->response))) {
-                r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): short term auth failed",ctx->label);
+                r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): short term auth failed",ctx->label);
                 ABORT(r);
             }
         }
@@ -598,7 +598,7 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
 
     if (NR_STUN_GET_TYPE_CLASS(ctx->response->header.type) == NR_CLASS_RESPONSE) {
         if ((r=nr_stun_process_success_response(ctx->response))) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_stun_process_success_response failed",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_stun_process_success_response failed",ctx->label);
             ABORT(r);
         }
     }
@@ -612,13 +612,13 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
            the error code, and just keep going.
         */
         if ((r=nr_stun_process_error_response(ctx->response, &ctx->error_code))) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_stun_process_error_response failed",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_stun_process_error_response failed",ctx->label);
             ABORT(r);
         }
         else {
           ctx->error_code = 0xffff;
             /* drop the error on the floor */
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): processed error response",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): processed error response",ctx->label);
             ABORT(R_FAILED);
         }
     }
@@ -630,11 +630,11 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
     case NR_STUN_CLIENT_MODE_BINDING_REQUEST_LONG_TERM_AUTH:
     case NR_STUN_CLIENT_MODE_BINDING_REQUEST_SHORT_TERM_AUTH:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_MAPPED_ADDRESS, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
             ABORT(R_BAD_DATA);
         }
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MESSAGE_INTEGRITY, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
@@ -648,7 +648,7 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
               r_log(NR_LOG_STUN,LOG_INFO,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS but MAPPED-ADDRESS. Falling back (though server is wrong).", ctx->label);
             }
             else {
-              r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS or MAPPED-ADDRESS",ctx->label);
+              r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS or MAPPED-ADDRESS",ctx->label);
               ABORT(R_BAD_DATA);
             }
         }
@@ -658,7 +658,7 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
 
     case NR_STUN_CLIENT_MODE_BINDING_REQUEST_STUND_0_96:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MAPPED_ADDRESS, 0) && ! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_MAPPED_ADDRESS, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MAPPED-ADDRESS",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MAPPED-ADDRESS",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
@@ -668,11 +668,11 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
 #ifdef USE_ICE
     case NR_ICE_CLIENT_MODE_BINDING_REQUEST:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_MAPPED_ADDRESS, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
             ABORT(R_BAD_DATA);
         }
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MESSAGE_INTEGRITY, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
@@ -680,11 +680,11 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
         break;
     case NR_ICE_CLIENT_MODE_USE_CANDIDATE:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_MAPPED_ADDRESS, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
             ABORT(R_BAD_DATA);
         }
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MESSAGE_INTEGRITY, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
@@ -695,34 +695,34 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
 #ifdef USE_TURN
     case NR_TURN_CLIENT_MODE_ALLOCATE_REQUEST:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_MAPPED_ADDRESS, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No XOR-MAPPED-ADDRESS",ctx->label);
             ABORT(R_BAD_DATA);
         }
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MESSAGE_INTEGRITY, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
         if (!nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_RELAY_ADDRESS, &attr)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No XOR-RELAYED-ADDRESS",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No XOR-RELAYED-ADDRESS",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
         if ((r=nr_stun_transport_addr_check(&attr->u.relay_address.unmasked,
                                             ctx->mapped_addr_check_mask))) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_stun_transport_addr_check failed",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_stun_transport_addr_check failed",ctx->label);
             ABORT(r);
         }
 
         if ((r=nr_transport_addr_copy(
                 &ctx->results.allocate_response.relay_addr,
                 &attr->u.relay_address.unmasked))) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_transport_addr_copy failed",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_transport_addr_copy failed",ctx->label);
             ABORT(r);
         }
 
         if (!nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_LIFETIME, &attr)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No LIFETIME",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No LIFETIME",ctx->label);
             ABORT(R_BAD_DATA);
         }
         ctx->results.allocate_response.lifetime_secs=attr->u.lifetime_secs;
@@ -734,18 +734,18 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
         break;
     case NR_TURN_CLIENT_MODE_REFRESH_REQUEST:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MESSAGE_INTEGRITY, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
             ABORT(R_BAD_DATA);
         }
         if (!nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_LIFETIME, &attr)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No LIFETIME",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No LIFETIME",ctx->label);
             ABORT(R_BAD_DATA);
         }
         ctx->results.refresh_response.lifetime_secs=attr->u.lifetime_secs;
         break;
     case NR_TURN_CLIENT_MODE_PERMISSION_REQUEST:
         if (! nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MESSAGE_INTEGRITY, 0)) {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No MESSAGE-INTEGRITY",ctx->label);
             ABORT(R_BAD_DATA);
         }
         break;
@@ -767,29 +767,29 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
         if (nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_XOR_MAPPED_ADDRESS, &attr)) {
             if ((r=nr_stun_transport_addr_check(&attr->u.xor_mapped_address.unmasked,
                                                 ctx->mapped_addr_check_mask))) {
-                r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): XOR-MAPPED-ADDRESS is bogus",ctx->label);
+                r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): XOR-MAPPED-ADDRESS is bogus",ctx->label);
                 ABORT(r);
             }
 
             if ((r=nr_transport_addr_copy(mapped_addr, &attr->u.xor_mapped_address.unmasked))) {
-                r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_transport_addr_copy failed",ctx->label);
+                r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_transport_addr_copy failed",ctx->label);
                 ABORT(r);
             }
         }
         else if (nr_stun_message_has_attribute(ctx->response, NR_STUN_ATTR_MAPPED_ADDRESS, &attr)) {
             if ((r=nr_stun_transport_addr_check(&attr->u.mapped_address,
                                                 ctx->mapped_addr_check_mask))) {
-                r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): MAPPED-ADDRESS is bogus",ctx->label);
+                r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): MAPPED-ADDRESS is bogus",ctx->label);
                 ABORT(r);
             }
 
             if ((r=nr_transport_addr_copy(mapped_addr, &attr->u.mapped_address))) {
-                r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): nr_transport_addr_copy failed",ctx->label);
+                r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): nr_transport_addr_copy failed",ctx->label);
                 ABORT(r);
             }
         }
         else {
-            r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): No mapped address!",ctx->label);
+            r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): No mapped address!",ctx->label);
             ABORT(R_BAD_DATA);
         }
 
@@ -808,7 +808,7 @@ int nr_stun_client_process_response(nr_stun_client_ctx *ctx, UCHAR *msg, int len
     _status=0;
   abort:
     if(_status && response_matched){
-      r_log(NR_LOG_STUN,LOG_WARNING,"STUN-CLIENT(%s): Error processing response: %s, stun error code %d.", ctx->label, nr_strerror(_status), (int)ctx->error_code);
+      r_log(NR_LOG_STUN,LOG_NOTICE,"STUN-CLIENT(%s): Error processing response: %s, stun error code %d.", ctx->label, nr_strerror(_status), (int)ctx->error_code);
     }
 
     if ((ctx->state != NR_STUN_CLIENT_STATE_RUNNING) &&

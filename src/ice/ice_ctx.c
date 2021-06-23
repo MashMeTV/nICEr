@@ -347,7 +347,7 @@ int nr_ice_ctx_create(char *label, UINT4 flags, nr_ice_ctx **ctxp)
 
     /* 31 is the max for our priority algorithm */
     if(ctx->stun_server_ct>31){
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): Too many STUN servers specified: max=31", ctx->label);
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): Too many STUN servers specified: max=31", ctx->label);
       ctx->stun_server_ct=31;
     }
 
@@ -378,7 +378,7 @@ int nr_ice_ctx_create(char *label, UINT4 flags, nr_ice_ctx **ctxp)
 
     /* 31 is the max for our priority algorithm */
     if((ctx->stun_server_ct+ctx->turn_server_ct)>31){
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): Too many STUN/TURN servers specified: max=31", ctx->label);
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): Too many STUN/TURN servers specified: max=31", ctx->label);
       ctx->turn_server_ct=31-ctx->stun_server_ct;
     }
 
@@ -515,7 +515,7 @@ void nr_ice_gather_finished_cb(NR_SOCKET s, int h, void *cb_arg)
 
     ctx->uninitialized_candidates--;
     if (cand->state == NR_ICE_CAND_STATE_FAILED) {
-      r_log(LOG_ICE, LOG_WARNING,
+      r_log(LOG_ICE, LOG_NOTICE,
             "ICE(%s)/CAND(%s): failed to initialize, %d remaining", ctx->label,
             cand->label, ctx->uninitialized_candidates);
     } else {
@@ -998,7 +998,7 @@ int nr_ice_ctx_deliver_packet(nr_ice_ctx *ctx, nr_ice_component *comp, nr_transp
     }
 
     if(!pctx)
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): Packet received from %s which doesn't match any known peer",ctx->label,source_addr->as_string);
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): Packet received from %s which doesn't match any known peer",ctx->label,source_addr->as_string);
 
     return(0);
   }

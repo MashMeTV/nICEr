@@ -225,14 +225,14 @@ static void nr_ice_candidate_pair_stun_cb(NR_SOCKET s, int how, void *cb_arg)
         response_src=&pair->stun_client->peer_addr;
         request_dst=&pair->remote->addr;
         if (nr_transport_addr_cmp(response_src,request_dst,NR_TRANSPORT_ADDR_CMP_MODE_ALL)){
-          r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s)/CAND-PAIR(%s): Peer address mismatch %s != %s",pair->pctx->label,pair->codeword,response_src->as_string,request_dst->as_string);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s)/CAND-PAIR(%s): Peer address mismatch %s != %s",pair->pctx->label,pair->codeword,response_src->as_string,request_dst->as_string);
           nr_ice_candidate_pair_set_state(pair->pctx,pair,NR_ICE_PAIR_STATE_FAILED);
           break;
         }
         request_src=&pair->stun_client->my_addr;
         nr_socket_getaddr(pair->local->osock,&response_dst);
         if (nr_transport_addr_cmp(request_src,&response_dst,NR_TRANSPORT_ADDR_CMP_MODE_ALL)){
-          r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s)/CAND-PAIR(%s): Local address mismatch %s != %s",pair->pctx->label,pair->codeword,request_src->as_string,response_dst.as_string);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s)/CAND-PAIR(%s): Local address mismatch %s != %s",pair->pctx->label,pair->codeword,request_src->as_string,response_dst.as_string);
           nr_ice_candidate_pair_set_state(pair->pctx,pair,NR_ICE_PAIR_STATE_FAILED);
           break;
         }
@@ -245,7 +245,7 @@ static void nr_ice_candidate_pair_stun_cb(NR_SOCKET s, int how, void *cb_arg)
            * just assume that it's the server we're talking to and that our
            * peer is ok, but I'm not sure how that'll interact with the
            * peer reflexive logic below */
-          r_log(LOG_ICE,LOG_WARNING,"ICE-PEER(%s)/CAND-PAIR(%s): server failed to return mapped address on pair %s", pair->pctx->label,pair->codeword,pair->as_string);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE-PEER(%s)/CAND-PAIR(%s): server failed to return mapped address on pair %s", pair->pctx->label,pair->codeword,pair->as_string);
           nr_ice_candidate_pair_set_state(pair->pctx,pair,NR_ICE_PAIR_STATE_FAILED);
           break;
         }

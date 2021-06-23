@@ -135,7 +135,7 @@ nr_stun_parse_host_name( char* peerName,
          //int err = getErrno();
          int err = errno;
 
-         r_log_e(NR_LOG_STUN, LOG_WARNING, "Unable to get hostname");
+         r_log_e(NR_LOG_STUN, LOG_NOTICE, "Unable to get hostname");
          assert( err != WSANOTINITIALISED );
 
          *ip = ntohl( 0x7F000001L );
@@ -153,7 +153,7 @@ nr_stun_parse_host_name( char* peerName,
    h = gethostbyname( host );
    if ( h == NULL )
    {
-      r_log_e(NR_LOG_STUN, LOG_WARNING, "Unable to get hostname");
+      r_log_e(NR_LOG_STUN, LOG_NOTICE, "Unable to get hostname");
 
       *ip = ntohl( 0x7F000001L );
       ABORT(R_FAILED);

@@ -153,18 +153,18 @@ static int nr_ice_peer_ctx_parse_stream_attributes_int(nr_ice_peer_ctx *pctx, nr
     for(i=0;i<attr_ct;i++){
       if(!strncmp(attrs[i],"ice-",4)){
         if(r=nr_ice_peer_ctx_parse_media_stream_attribute(pctx,pstream,attrs[i])) {
-          r_log(LOG_ICE,LOG_WARNING,"ICE(%s): peer (%s) specified bogus ICE attribute",pctx->ctx->label,pctx->label);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): peer (%s) specified bogus ICE attribute",pctx->ctx->label,pctx->label);
           continue;
         }
       }
       else if (!strncmp(attrs[i],"candidate",9)){
         if(r=nr_ice_ctx_parse_candidate(pctx,pstream,attrs[i],0,0)) {
-          r_log(LOG_ICE,LOG_WARNING,"ICE(%s): peer (%s) specified bogus candidate",pctx->ctx->label,pctx->label);
+          r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): peer (%s) specified bogus candidate",pctx->ctx->label,pctx->label);
           continue;
         }
       }
       else {
-        r_log(LOG_ICE,LOG_WARNING,"ICE(%s): peer (%s) specified bogus attribute: %s",pctx->ctx->label,pctx->label,attrs[i]);
+        r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): peer (%s) specified bogus attribute: %s",pctx->ctx->label,pctx->label,attrs[i]);
       }
     }
 
@@ -208,11 +208,11 @@ static int nr_ice_ctx_parse_candidate(nr_ice_peer_ctx *pctx, nr_ice_media_stream
     }
 
     if (comp->state == NR_ICE_COMPONENT_DISABLED) {
-      r_log(LOG_ICE,LOG_WARNING,"Peer offered candidate for disabled remote component: %s", candidate);
+      r_log(LOG_ICE,LOG_NOTICE,"Peer offered candidate for disabled remote component: %s", candidate);
       ABORT(R_BAD_DATA);
     }
     if (comp->local_component->state == NR_ICE_COMPONENT_DISABLED) {
-      r_log(LOG_ICE,LOG_WARNING,"Peer offered candidate for disabled local component: %s", candidate);
+      r_log(LOG_ICE,LOG_NOTICE,"Peer offered candidate for disabled local component: %s", candidate);
       ABORT(R_BAD_DATA);
     }
 
@@ -246,7 +246,7 @@ int nr_ice_peer_ctx_find_pstream(nr_ice_peer_ctx *pctx, nr_ice_media_stream *str
        pstream = STAILQ_NEXT(pstream, entry);
      }
      if (!pstream) {
-       r_log(LOG_ICE,LOG_WARNING,"ICE(%s): peer (%s) has no stream matching stream %s",pctx->ctx->label,pctx->label,stream->label);
+       r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): peer (%s) has no stream matching stream %s",pctx->ctx->label,pctx->label,stream->label);
        ABORT(R_NOT_FOUND);
      }
 
@@ -844,7 +844,7 @@ void nr_ice_peer_ctx_switch_controlling_role(nr_ice_peer_ctx *pctx)
   {
     int controlling = !(pctx->controlling);
     if(pctx->controlling_conflict_resolved) {
-      r_log(LOG_ICE,LOG_WARNING,"ICE(%s): peer (%s) %s called more than once; "
+      r_log(LOG_ICE,LOG_NOTICE,"ICE(%s): peer (%s) %s called more than once; "
             "this probably means the peer is confused. Not switching roles.",
             pctx->ctx->label,pctx->label,__FUNCTION__);
       return;

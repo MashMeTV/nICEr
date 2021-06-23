@@ -86,7 +86,7 @@ nr_stun_encode_htons(UINT2 data, size_t buflen, UCHAR *buf, size_t *offset)
    UINT2 d = htons(data);
 
    if (*offset + sizeof(d) >= buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %zd >= %d", *offset, sizeof(d), buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %zd >= %d", *offset, sizeof(d), buflen);
       return R_BAD_DATA;
    }
 
@@ -102,7 +102,7 @@ nr_stun_encode_htonl(UINT4 data, size_t buflen, UCHAR *buf, size_t *offset)
    UINT4 d = htonl(data);
 
    if (*offset + sizeof(d) > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
       return R_BAD_DATA;
    }
 
@@ -118,7 +118,7 @@ nr_stun_encode_htonll(UINT8 data, size_t buflen, UCHAR *buf, size_t *offset)
    UINT8 d = nr_htonll(data);
 
    if (*offset + sizeof(d) > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
       return R_BAD_DATA;
    }
 
@@ -132,7 +132,7 @@ int
 nr_stun_encode(UCHAR *data, size_t length, size_t buflen, UCHAR *buf, size_t *offset)
 {
    if (*offset + length > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %d > %d", *offset, length, buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %d > %d", *offset, length, buflen);
       return R_BAD_DATA;
    }
 
@@ -149,7 +149,7 @@ nr_stun_decode_htons(UCHAR *buf, size_t buflen, size_t *offset, UINT2 *data)
    UINT2 d;
 
    if (*offset + sizeof(d) > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
       return R_BAD_DATA;
    }
 
@@ -166,7 +166,7 @@ nr_stun_decode_htonl(UCHAR *buf, size_t buflen, size_t *offset, UINT4 *data)
    UINT4 d;
 
    if (*offset + sizeof(d) > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
       return R_BAD_DATA;
    }
 
@@ -183,7 +183,7 @@ nr_stun_decode_htonll(UCHAR *buf, size_t buflen, size_t *offset, UINT8 *data)
    UINT8 d;
 
    if (*offset + sizeof(d) > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %zd > %d", *offset, sizeof(d), buflen);
       return R_BAD_DATA;
    }
 
@@ -198,7 +198,7 @@ int
 nr_stun_decode(size_t length, UCHAR *buf, size_t buflen, size_t *offset, UCHAR *data)
 {
    if (*offset + length > buflen) {
-      r_log(NR_LOG_STUN, LOG_WARNING, "Attempted buffer overrun: %d + %d > %d", *offset, length, buflen);
+      r_log(NR_LOG_STUN, LOG_NOTICE, "Attempted buffer overrun: %d + %d > %d", *offset, length, buflen);
       return R_BAD_DATA;
    }
 
@@ -241,13 +241,13 @@ nr_stun_attr_string_illegal(nr_stun_attr_info *attr_info, size_t len, void *data
     size_t nchars;
 
     if (len > max_bytes) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "%s is too large: %d bytes", attr_info->name, len);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "%s is too large: %d bytes", attr_info->name, len);
         ABORT(R_FAILED);
     }
 
     nchars = nr_count_utf8_code_points_without_validation(s);
     if (nchars > max_chars) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "%s is too large: %zd characters", attr_info->name, nchars);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "%s is too large: %zd characters", attr_info->name, nchars);
         ABORT(R_FAILED);
     }
 
@@ -327,7 +327,7 @@ nr_stun_attr_codec_UCHAR_decode(nr_stun_attr_info *attr_info, size_t attrlen, UC
     UINT4 tmp;
 
     if (attrlen != sizeof(UINT4)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Integer is illegal size: %d", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Integer is illegal size: %d", attrlen);
         return R_FAILED;
     }
 
@@ -372,7 +372,7 @@ static int
 nr_stun_attr_codec_UINT4_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCHAR *buf, size_t offset, size_t buflen, void *data)
 {
     if (attrlen != sizeof(UINT4)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Integer is illegal size: %d", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Integer is illegal size: %d", attrlen);
         return R_FAILED;
     }
 
@@ -415,7 +415,7 @@ static int
 nr_stun_attr_codec_UINT8_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCHAR *buf, size_t offset, size_t buflen, void *data)
 {
     if (attrlen != sizeof(UINT8)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Integer is illegal size: %d", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Integer is illegal size: %d", attrlen);
         return R_FAILED;
     }
 
@@ -503,7 +503,7 @@ nr_stun_attr_codec_addr_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCH
     switch (family) {
     case NR_STUN_IPV4_FAMILY:
         if (attrlen != 8) {
-            r_log(NR_LOG_STUN, LOG_WARNING, "Illegal attribute length: %d", attrlen);
+            r_log(NR_LOG_STUN, LOG_NOTICE, "Illegal attribute length: %d", attrlen);
             ABORT(R_FAILED);
         }
 
@@ -517,7 +517,7 @@ nr_stun_attr_codec_addr_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCH
 
     case NR_STUN_IPV6_FAMILY:
         if (attrlen != 20) {
-            r_log(NR_LOG_STUN, LOG_WARNING, "Illegal attribute length: %d", attrlen);
+            r_log(NR_LOG_STUN, LOG_NOTICE, "Illegal attribute length: %d", attrlen);
             ABORT(R_FAILED);
         }
 
@@ -530,7 +530,7 @@ nr_stun_attr_codec_addr_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCH
         break;
 
     default:
-        r_log(NR_LOG_STUN, LOG_WARNING, "Illegal address family: %d", family);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Illegal address family: %d", family);
         ABORT(R_FAILED);
         break;
     }
@@ -579,7 +579,7 @@ nr_stun_attr_codec_data_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCH
 
     /* -1 because it is going to be null terminated just to be safe */
     if (attrlen >= (sizeof(result->data) - 1)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Too much data: %d bytes", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Too much data: %d bytes", attrlen);
         ABORT(R_FAILED);
     }
 
@@ -655,7 +655,7 @@ nr_stun_attr_codec_error_code_decode(nr_stun_attr_info *attr_info, size_t attrle
 
     /* -1 because the string will be null terminated */
     if (size_reason > (sizeof(result->reason) - 1)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Reason is too large, truncating");
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Reason is too large, truncating");
         /* don't fail, but instead truncate the reason */
         size_reason = sizeof(result->reason) - 1;
     }
@@ -698,7 +698,7 @@ nr_stun_attr_codec_fingerprint_encode(nr_stun_attr_info *attr_info, void *data, 
     header->length = htons(header->length);
 
     if (r_crc32((char*)buf, offset, &checksum)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Unable to compute fingerprint");
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Unable to compute fingerprint");
         return R_FAILED;
     }
 
@@ -733,12 +733,12 @@ nr_stun_attr_codec_fingerprint_decode(nr_stun_attr_info *attr_info, size_t attrl
 
     /* make sure FINGERPRINT is final attribute in message */
     if (length + sizeof(*header) != buflen) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Fingerprint is not final attribute in message");
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Fingerprint is not final attribute in message");
         ABORT(R_FAILED);
     }
 
     if (r_crc32((char*)buf, offset, &checksum)) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Unable to compute fingerprint");
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Unable to compute fingerprint");
         ABORT(R_FAILED);
     }
 
@@ -746,7 +746,7 @@ nr_stun_attr_codec_fingerprint_decode(nr_stun_attr_info *attr_info, size_t attrl
 
     r_log(NR_LOG_STUN, LOG_NOTICE, "Computed FINGERPRINT %08x", (checksum ^ 0x5354554e));
     if (! fingerprint->valid)
-        r_log(NR_LOG_STUN, LOG_WARNING, "Invalid FINGERPRINT %08x", fingerprint->checksum);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Invalid FINGERPRINT %08x", fingerprint->checksum);
 
     _status=0;
   abort:
@@ -785,7 +785,7 @@ static int
 nr_stun_attr_codec_flag_decode(nr_stun_attr_info *attr_info, size_t attrlen, UCHAR *buf, size_t offset, size_t buflen, void *data)
 {
     if (attrlen != 0) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Illegal flag length: %d", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Illegal flag length: %d", attrlen);
         return R_FAILED;
     }
 
@@ -868,7 +868,7 @@ nr_stun_attr_codec_message_integrity_decode(nr_stun_attr_info *attr_info, size_t
     result->valid = 0;
 
     if (attrlen != 20) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "%s must be 20 bytes, not %d", attr_info->name, attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "%s must be 20 bytes, not %d", attr_info->name, attrlen);
         ABORT(R_FAILED);
     }
 
@@ -980,7 +980,7 @@ nr_stun_attr_codec_string_decode(nr_stun_attr_info *attr_info, size_t attrlen, U
 
     /* actual enforcement of the specific string size happens elsewhere */
     if (attrlen >= NR_STUN_MAX_STRING_SIZE) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "String is too large: %d bytes", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "String is too large: %d bytes", attrlen);
         ABORT(R_FAILED);
     }
 
@@ -992,7 +992,7 @@ nr_stun_attr_codec_string_decode(nr_stun_attr_info *attr_info, size_t attrlen, U
         /* stund 0.96 sends a final null in the Server attribute, so
          * only error if the null appears anywhere else in a string */
         if (strlen(result) != attrlen-1) {
-            r_log(NR_LOG_STUN, LOG_WARNING, "Error in string: %zd/%d", strlen(result), attrlen);
+            r_log(NR_LOG_STUN, LOG_NOTICE, "Error in string: %zd/%d", strlen(result), attrlen);
             ABORT(R_FAILED);
         }
     }
@@ -1037,7 +1037,7 @@ nr_stun_attr_codec_unknown_attributes_encode(nr_stun_attr_info *attr_info, void 
     int i;
 
     if (unknown_attributes->num_attributes > NR_STUN_MAX_UNKNOWN_ATTRIBUTES) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Too many UNKNOWN-ATTRIBUTES: %d", unknown_attributes->num_attributes);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Too many UNKNOWN-ATTRIBUTES: %d", unknown_attributes->num_attributes);
         ABORT(R_FAILED);
     }
 
@@ -1066,14 +1066,14 @@ nr_stun_attr_codec_unknown_attributes_decode(nr_stun_attr_info *attr_info, size_
     UINT2 *a;
 
     if ((attrlen % 4) != 0) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Attribute is illegal size: %d", attrlen);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Attribute is illegal size: %d", attrlen);
         ABORT(R_REJECTED);
     }
 
     unknown_attributes->num_attributes = attrlen / 2;
 
     if (unknown_attributes->num_attributes > NR_STUN_MAX_UNKNOWN_ATTRIBUTES) {
-        r_log(NR_LOG_STUN, LOG_WARNING, "Too many UNKNOWN-ATTRIBUTES: %d", unknown_attributes->num_attributes);
+        r_log(NR_LOG_STUN, LOG_NOTICE, "Too many UNKNOWN-ATTRIBUTES: %d", unknown_attributes->num_attributes);
         ABORT(R_REJECTED);
     }
 
@@ -1346,7 +1346,7 @@ nr_stun_encode_message(nr_stun_message *msg)
 
     TAILQ_FOREACH(attr, &msg->attributes, entry) {
         if ((r=nr_stun_find_attr_info(attr->type, &attr_info))) {
-            r_log(NR_LOG_STUN, LOG_WARNING, "Unrecognized attribute: 0x%04x", attr->type);
+            r_log(NR_LOG_STUN, LOG_NOTICE, "Unrecognized attribute: 0x%04x", attr->type);
             ABORT(R_INTERNAL);
         }
 
@@ -1356,7 +1356,7 @@ nr_stun_encode_message(nr_stun_message *msg)
 
         if (attr_info->codec->encode != 0) {
             if ((r=attr_info->codec->encode(attr_info, &attr->u, msg->length, sizeof(msg->buffer), msg->buffer, &attr->encoding_length))) {
-                r_log(NR_LOG_STUN, LOG_WARNING, "Unable to encode %s", attr_info->name);
+                r_log(NR_LOG_STUN, LOG_NOTICE, "Unable to encode %s", attr_info->name);
                 ABORT(r);
             }
 
@@ -1384,7 +1384,7 @@ nr_stun_encode_message(nr_stun_message *msg)
             (void)nr_stun_encode_htons(msg->header.length, sizeof(msg->buffer), msg->buffer, &length_offset);
         }
         else {
-            r_log(NR_LOG_STUN, LOG_WARNING, "Missing encode function for attribute: %s", attr_info->name);
+            r_log(NR_LOG_STUN, LOG_NOTICE, "Missing encode function for attribute: %s", attr_info->name);
         }
     }
 
@@ -1418,7 +1418,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
         ABORT(R_BAD_ARGS);
 
     if (sizeof(nr_stun_message_header) > msg->length) {
-       r_log(NR_LOG_STUN, LOG_WARNING, "Message too small");
+       r_log(NR_LOG_STUN, LOG_NOTICE, "Message too small");
        ABORT(R_FAILED);
     }
 
@@ -1438,7 +1438,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
     r_dump(NR_LOG_STUN, LOG_NOTICE, "Parsed ID", (void*)&msg->header.id, sizeof(msg->header.id));
 
     if (msg->header.length + sizeof(msg->header) != msg->length) {
-       r_log(NR_LOG_STUN, LOG_WARNING, "Inconsistent message header length: %d/%d",
+       r_log(NR_LOG_STUN, LOG_NOTICE, "Inconsistent message header length: %d/%d",
                                         msg->header.length, msg->length);
        ABORT(R_FAILED);
     }
@@ -1446,7 +1446,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
     size = msg->header.length;
 
     if ((size % 4) != 0) {
-       r_log(NR_LOG_STUN, LOG_WARNING, "Illegal message size: %d", msg->header.length);
+       r_log(NR_LOG_STUN, LOG_NOTICE, "Illegal message size: %d", msg->header.length);
        ABORT(R_FAILED);
     }
 
@@ -1456,7 +1456,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
         r_log(NR_LOG_STUN, LOG_NOTICE, "size = %d", size);
 
         if (size < 4) {
-           r_log(NR_LOG_STUN, LOG_WARNING, "Illegal message length: %d", size);
+           r_log(NR_LOG_STUN, LOG_NOTICE, "Illegal message length: %d", size);
            ABORT(R_FAILED);
         }
 
@@ -1474,7 +1474,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
         }
 
         if ((attr->encoding_length) > (size_t)size) {
-           r_log(NR_LOG_STUN, LOG_WARNING, "Attribute length larger than remaining message size: %d/%d", attr->encoding_length, size);
+           r_log(NR_LOG_STUN, LOG_NOTICE, "Attribute length larger than remaining message size: %d/%d", attr->encoding_length, size);
            ABORT(R_FAILED);
         }
 
@@ -1492,7 +1492,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
             if (attr->type == NR_STUN_ATTR_MESSAGE_INTEGRITY) {
                 if (get_password && get_password(arg, msg, &password) == 0) {
                     if (password->len > sizeof(attr->u.message_integrity.password)) {
-                        r_log(NR_LOG_STUN, LOG_WARNING, "Password too long: %d bytes", password->len);
+                        r_log(NR_LOG_STUN, LOG_NOTICE, "Password too long: %d bytes", password->len);
                         ABORT(R_FAILED);
                     }
 
@@ -1514,7 +1514,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
                     r_log(NR_LOG_STUN, LOG_INFO, "Skipping %s", attr_info->name);
                 }
                 else {
-                    r_log(NR_LOG_STUN, LOG_WARNING, "Unable to parse %s", attr_info->name);
+                    r_log(NR_LOG_STUN, LOG_NOTICE, "Unable to parse %s", attr_info->name);
                 }
 
                 attr->invalid = 1;
@@ -1526,7 +1526,7 @@ nr_stun_decode_message(nr_stun_message *msg, int (*get_password)(void *arg, nr_s
                 r_log(NR_LOG_STUN, LOG_NOTICE, "Before pedantic attr_info checks");
                 if (attr_info->illegal) {
                     if ((r=attr_info->illegal(attr_info, attr->length, &attr->u))) {
-                        r_log(NR_LOG_STUN, LOG_WARNING, "Failed pedantic attr_info checks");
+                        r_log(NR_LOG_STUN, LOG_NOTICE, "Failed pedantic attr_info checks");
                         ABORT(r);
                     }
                 }
